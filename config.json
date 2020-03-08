@@ -1,0 +1,10 @@
+{
+    "base_discord_api_url": "https://discordapp.com/api",
+    "token_extension": "/oauth2/token",
+    "author_extension": "oauth2/authorize",
+    "scope": ["identify", "email"],
+    "client_id": "client_id",
+    "client_secret": "client_secret",
+    "domain": "domain",
+    "debug": "false"
+}
