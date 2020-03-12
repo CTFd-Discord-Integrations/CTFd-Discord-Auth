@@ -144,4 +144,5 @@ def load(app):
 
     # Registration
     override_page(base_asset_path, "login.html")
+    override_page(base_asset_path, "users/private.html")
     app.register_blueprint(discord_blueprint)
