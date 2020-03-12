@@ -1,5 +1,8 @@
 # Project module imports
 from CTFd.plugins import register_plugin_assets_directory, override_template
+from CTFd.utils.decorators import ratelimit
+from CTFd.models import Users, db
+from CTFd.utils.security.auth import login_user
 
 # External module imports
 from flask import request, session, Blueprint, redirect
@@ -33,7 +36,8 @@ def override_page(base_asset_path: str, page: str):
         log.error("Unable to replace {} template".format(page))
 
 # Routes
-@discord_blueprint.route("/discord/oauth")
+@discord_blueprint.route("/discord/oauth", methods=["GET"])
+@ratelimit(method="GET", limit=10, interval=10)
 def discord_oauth_login():
     """
     Configures Discord Oauth and redirects to Discord Login
@@ -46,7 +50,8 @@ def discord_oauth_login():
     return redirect(discord_oauth.gen_auth_url())
 
 
-@discord_blueprint.route("/discord/oauth_callback")
+@discord_blueprint.route("/discord/oauth_callback", methods=["GET","POST"])
+@ratelimit(method="POST", limit=10, interval=5)
 def discord_oauth_callback():
     """
     Callback response configured to come from Discord's OAuth2 redirect
@@ -72,10 +77,10 @@ def check_debug_mode(debug: bool):
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
-        logging.debug("Debug mode enabled.")
+        log.debug("Debug mode enabled.")
     else:
         logging.basicConfig(level=logging.INFO)
-        logging.debug("Log level {log_level} enabled.".format(logging.getEffectiveLevel()))
+        log.info("Log level {} enabled.".format(logging.getLevelName(log.getEffectiveLevel())))
 
 
 def load_config():
@@ -146,3 +151,4 @@ def load(app):
     override_page(base_asset_path, "login.html")
     override_page(base_asset_path, "users/private.html")
     app.register_blueprint(discord_blueprint)
+    log.info("Discord OAuth2 URL -> https://{}/discord/oauth_callback".format(config["domain"]))
