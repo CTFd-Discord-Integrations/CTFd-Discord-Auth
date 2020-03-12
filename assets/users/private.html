@@ -18,11 +18,17 @@
 				</h2>
 			{% endif %}
 
-			{% if user.oauth_id %}
+			{% if integrations.mlc() and user.oauth_id %}
 				<a href="https://majorleaguecyber.org/u/{{ user.name }}">
 					<h3><span class="badge badge-primary">Official</span></h3>
 				</a>
 			{% endif %}
+
+            {% if user.oauth_id %}
+                <h3>
+                    <span class="badge badge-primary"> Discord </span>
+                </h3>
+            {% endif %}
 
 			{% if user.affiliation %}
 				<h3 class="d-inline-block">
