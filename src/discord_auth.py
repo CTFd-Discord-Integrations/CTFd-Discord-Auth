@@ -12,6 +12,7 @@ import json
 
 # Local module imports
 from .discord_oauth import Discord_Oauth
+from .discord_database import DiscordUser
 
 # Global variables
 # Used primarily due to flask routed functions being unable to use class "self" reflections
@@ -146,6 +147,9 @@ def load(app):
     # Get plugin asset path
     base_asset_path = os.path.dirname(os.path.realpath(__file__)) + "/../assets/"
     register_plugin_assets_directory(app, base_path=base_asset_path)
+
+    # DB Setup
+    app.db.create_all()
 
     # Registration
     override_page(base_asset_path, "login.html")
