@@ -71,9 +71,9 @@ def discord_oauth_callback():
     if user_json:
         # lookup by email
         user = Users.query.filter_by(email=user_json["email"]).first()
+        discord_user = DiscordUser.query.filter_by(id=user_json["id"]).first()
         if user is None:
             # Check if user changed email
-            discord_user = DiscordUser.query.filter_by(id=user_json["id"]).first()
             if discord_user:
                 user = Users.query.filter_by(email=discord_user.email)
                 if user:
@@ -103,6 +103,20 @@ def discord_oauth_callback():
                     email=user_json["email"]
                 )
                 db.session.add(user)
+                db.session.add(discord_user)
+                db.session.commit()
+        else:
+            # Create Discord association if does not exist (legacy support)
+            if not discord_user:
+                discord_user = DiscordUser(
+                    id=user_json["id"],
+                    username=user_json["username"],
+                    discriminator=user_json["discriminator"],
+                    avatar_hash=user_json["avatar"],
+                    mfa_enabled=user_json["mfa_enabled"],
+                    verified=user_json["verified"],
+                    email=user_json["email"]
+                )
                 db.session.add(discord_user)
                 db.session.commit()
         # Login
